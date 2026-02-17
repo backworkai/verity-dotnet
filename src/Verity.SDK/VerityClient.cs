@@ -174,6 +174,175 @@ namespace Verity.SDK
             return await PostAsync<PriorAuthResult>("/prior-auth/check", body, headers, cancellationToken);
         }
 
+        /// <summary>
+        /// Get policy change feed
+        /// </summary>
+        public async Task<ApiResponse<List<PolicyChange>>> GetPolicyChangesAsync(
+            string? since = null,
+            string? policyId = null,
+            string? changeType = null,
+            string? cursor = null,
+            int limit = 50,
+            CancellationToken cancellationToken = default)
+        {
+            var queryParams = new Dictionary<string, string>
+            {
+                ["limit"] = limit.ToString()
+            };
+
+            if (!string.IsNullOrWhiteSpace(since))
+                queryParams["since"] = since;
+
+            if (!string.IsNullOrWhiteSpace(policyId))
+                queryParams["policy_id"] = policyId;
+
+            if (!string.IsNullOrWhiteSpace(changeType))
+                queryParams["change_type"] = changeType;
+
+            if (!string.IsNullOrWhiteSpace(cursor))
+                queryParams["cursor"] = cursor;
+
+            var path = BuildPath("/policies/changes", queryParams);
+            return await GetAsync<List<PolicyChange>>(path, cancellationToken);
+        }
+
+        /// <summary>
+        /// Compare policies across jurisdictions
+        /// </summary>
+        public async Task<ApiResponse<object>> ComparePoliciesAsync(
+            string[] procedureCodes,
+            string? policyType = null,
+            string[]? jurisdictions = null,
+            string? idempotencyKey = null,
+            CancellationToken cancellationToken = default)
+        {
+            var body = new Dictionary<string, object>
+            {
+                ["procedure_codes"] = procedureCodes
+            };
+
+            if (!string.IsNullOrWhiteSpace(policyType))
+                body["policy_type"] = policyType;
+
+            if (jurisdictions != null && jurisdictions.Length > 0)
+                body["jurisdictions"] = jurisdictions;
+
+            var headers = new Dictionary<string, string>();
+            if (!string.IsNullOrWhiteSpace(idempotencyKey))
+                headers["X-Idempotency-Key"] = idempotencyKey;
+
+            return await PostAsync<object>("/policies/compare", body, headers, cancellationToken);
+        }
+
+        /// <summary>
+        /// Search coverage criteria
+        /// </summary>
+        public async Task<ApiResponse<List<CriteriaBlock>>> SearchCriteriaAsync(
+            string query,
+            string? section = null,
+            string? policyType = null,
+            string? jurisdiction = null,
+            string? cursor = null,
+            int limit = 50,
+            CancellationToken cancellationToken = default)
+        {
+            var queryParams = new Dictionary<string, string>
+            {
+                ["q"] = query,
+                ["limit"] = limit.ToString()
+            };
+
+            if (!string.IsNullOrWhiteSpace(section))
+                queryParams["section"] = section;
+
+            if (!string.IsNullOrWhiteSpace(policyType))
+                queryParams["policy_type"] = policyType;
+
+            if (!string.IsNullOrWhiteSpace(jurisdiction))
+                queryParams["jurisdiction"] = jurisdiction;
+
+            if (!string.IsNullOrWhiteSpace(cursor))
+                queryParams["cursor"] = cursor;
+
+            var path = BuildPath("/coverage/criteria", queryParams);
+            return await GetAsync<List<CriteriaBlock>>(path, cancellationToken);
+        }
+
+        /// <summary>
+        /// List MAC jurisdictions
+        /// </summary>
+        public async Task<ApiResponse<List<Jurisdiction>>> ListJurisdictionsAsync(
+            CancellationToken cancellationToken = default)
+        {
+            return await GetAsync<List<Jurisdiction>>("/jurisdictions", cancellationToken);
+        }
+
+        /// <summary>
+        /// Research prior authorization requirements using AI-powered web research
+        /// </summary>
+        public async Task<ApiResponse<PriorAuthResearchResult>> ResearchPriorAuthAsync(
+            string[] procedureCodes,
+            string? payer = null,
+            string? state = null,
+            string[]? diagnosisCodes = null,
+            string? clinicalContext = null,
+            bool sync = false,
+            CancellationToken cancellationToken = default)
+        {
+            var body = new Dictionary<string, object>
+            {
+                ["procedure_codes"] = procedureCodes,
+                ["sync"] = sync
+            };
+
+            if (!string.IsNullOrWhiteSpace(payer))
+                body["payer"] = payer;
+
+            if (!string.IsNullOrWhiteSpace(state))
+                body["state"] = state;
+
+            if (diagnosisCodes != null && diagnosisCodes.Length > 0)
+                body["diagnosis_codes"] = diagnosisCodes;
+
+            if (!string.IsNullOrWhiteSpace(clinicalContext))
+                body["clinical_context"] = clinicalContext;
+
+            return await PostAsync<PriorAuthResearchResult>("/prior-auth/research", body, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Get the status and results of a prior authorization research task
+        /// </summary>
+        public async Task<ApiResponse<PriorAuthResearchResult>> GetPriorAuthResearchAsync(
+            string researchId,
+            CancellationToken cancellationToken = default)
+        {
+            return await GetAsync<PriorAuthResearchResult>($"/prior-auth/research/{researchId}", cancellationToken);
+        }
+
+        /// <summary>
+        /// Get Medicaid spending data by HCPCS code
+        /// </summary>
+        public async Task<ApiResponse<Dictionary<string, CodeSpendingData>>> GetSpendingByCodeAsync(
+            string? code = null,
+            string[]? codes = null,
+            int? year = null,
+            CancellationToken cancellationToken = default)
+        {
+            var queryParams = new Dictionary<string, string>();
+
+            if (!string.IsNullOrWhiteSpace(code))
+                queryParams["code"] = code;
+            else if (codes != null && codes.Length > 0)
+                queryParams["codes"] = string.Join(",", codes);
+
+            if (year.HasValue)
+                queryParams["year"] = year.Value.ToString();
+
+            var path = BuildPath("/spending/by-code", queryParams);
+            return await GetAsync<Dictionary<string, CodeSpendingData>>(path, cancellationToken);
+        }
+
         private async Task<ApiResponse<T>> GetAsync<T>(string path, CancellationToken cancellationToken)
         {
             var response = await _httpClient.GetAsync($"{_baseUrl}{path}", cancellationToken);

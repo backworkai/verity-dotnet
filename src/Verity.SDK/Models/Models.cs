@@ -135,4 +135,154 @@ namespace Verity.SDK.Models
         [JsonProperty("documentation_checklist")]
         public List<string>? DocumentationChecklist { get; set; }
     }
+
+    public class PolicyChange
+    {
+        [JsonProperty("policy_id")]
+        public string PolicyId { get; set; } = string.Empty;
+
+        [JsonProperty("change_type")]
+        public string ChangeType { get; set; } = string.Empty;
+
+        [JsonProperty("change_summary")]
+        public string? ChangeSummary { get; set; }
+
+        [JsonProperty("changed_fields")]
+        public List<string>? ChangedFields { get; set; }
+
+        [JsonProperty("old_version")]
+        public string? OldVersion { get; set; }
+
+        [JsonProperty("new_version")]
+        public string? NewVersion { get; set; }
+
+        [JsonProperty("timestamp")]
+        public string? Timestamp { get; set; }
+    }
+
+    public class Jurisdiction
+    {
+        [JsonProperty("mac_name")]
+        public string MacName { get; set; } = string.Empty;
+
+        [JsonProperty("mac_code")]
+        public string? MacCode { get; set; }
+
+        [JsonProperty("jurisdiction_code")]
+        public string JurisdictionCode { get; set; } = string.Empty;
+
+        [JsonProperty("jurisdiction_name")]
+        public string? JurisdictionName { get; set; }
+
+        [JsonProperty("states")]
+        public List<string>? States { get; set; }
+    }
+
+    public class CriteriaBlock
+    {
+        [JsonProperty("block_id")]
+        public string? BlockId { get; set; }
+
+        [JsonProperty("text")]
+        public string? Text { get; set; }
+
+        [JsonProperty("tags")]
+        public List<string>? Tags { get; set; }
+
+        [JsonProperty("policy_id")]
+        public string? PolicyId { get; set; }
+
+        [JsonProperty("policy_title")]
+        public string? PolicyTitle { get; set; }
+
+        [JsonProperty("section")]
+        public string? Section { get; set; }
+    }
+
+    public class PriorAuthResearchResult
+    {
+        [JsonProperty("research_id")]
+        public string ResearchId { get; set; } = string.Empty;
+
+        [JsonProperty("status")]
+        public string Status { get; set; } = string.Empty;
+
+        [JsonProperty("created_at")]
+        public string? CreatedAt { get; set; }
+
+        [JsonProperty("finished_at")]
+        public string? FinishedAt { get; set; }
+
+        [JsonProperty("poll_url")]
+        public string? PollUrl { get; set; }
+
+        [JsonProperty("result")]
+        public Dictionary<string, object>? Result { get; set; }
+
+        [JsonProperty("cost")]
+        public ResearchCost? Cost { get; set; }
+
+        [JsonProperty("error")]
+        public string? Error { get; set; }
+    }
+
+    public class ResearchCost
+    {
+        [JsonProperty("num_searches")]
+        public int NumSearches { get; set; }
+
+        [JsonProperty("num_pages")]
+        public int NumPages { get; set; }
+
+        [JsonProperty("reasoning_tokens")]
+        public int ReasoningTokens { get; set; }
+
+        [JsonProperty("total_dollars")]
+        public double TotalDollars { get; set; }
+    }
+
+    public class CodeSpendingData
+    {
+        [JsonProperty("total_paid")]
+        public string TotalPaid { get; set; } = string.Empty;
+
+        [JsonProperty("total_claims")]
+        public int TotalClaims { get; set; }
+
+        [JsonProperty("unique_beneficiaries")]
+        public int UniqueBeneficiaries { get; set; }
+
+        [JsonProperty("unique_providers")]
+        public int UniqueProviders { get; set; }
+
+        [JsonProperty("date_range")]
+        public DateRange? DateRange { get; set; }
+
+        [JsonProperty("by_year")]
+        public List<YearlySpending>? ByYear { get; set; }
+    }
+
+    public class DateRange
+    {
+        [JsonProperty("min")]
+        public string? Min { get; set; }
+
+        [JsonProperty("max")]
+        public string? Max { get; set; }
+    }
+
+    public class YearlySpending
+    {
+        [JsonProperty("year")]
+        public int Year { get; set; }
+
+        [JsonProperty("total_paid")]
+        public string TotalPaid { get; set; } = string.Empty;
+
+        [JsonProperty("total_claims")]
+        public int TotalClaims { get; set; }
+
+        [JsonProperty("unique_beneficiaries")]
+        public int UniqueBeneficiaries { get; set; }
+    }
 }
