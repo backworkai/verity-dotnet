@@ -285,4 +285,53 @@ namespace Verity.SDK.Models
         [JsonProperty("unique_beneficiaries")]
         public int UniqueBeneficiaries { get; set; }
     }
+
+    public class BatchCodeLookupData
+    {
+        [JsonProperty("results")]
+        public Dictionary<string, CodeLookupData> Results { get; set; } = new();
+    }
+
+    public class CoverageEvaluationData
+    {
+        [JsonProperty("covered")] public bool Covered { get; set; }
+        [JsonProperty("confidence")] public double Confidence { get; set; }
+        [JsonProperty("reasons")] public List<string> Reasons { get; set; } = new();
+        [JsonProperty("matched_criteria")] public List<string> MatchedCriteria { get; set; } = new();
+        [JsonProperty("unmatched_criteria")] public List<string> UnmatchedCriteria { get; set; } = new();
+        [JsonProperty("skipped_criteria")] public List<string> SkippedCriteria { get; set; } = new();
+        [JsonProperty("blocks_evaluated")] public int BlocksEvaluated { get; set; }
+        [JsonProperty("blocks_without_ast")] public int BlocksWithoutAst { get; set; }
+        [JsonProperty("policy")] public PolicyRef? Policy { get; set; }
+    }
+
+    public class PolicyRef
+    {
+        [JsonProperty("policy_id")] public string PolicyId { get; set; } = "";
+        [JsonProperty("title")] public string Title { get; set; } = "";
+        [JsonProperty("policy_type")] public string PolicyType { get; set; } = "";
+    }
+
+    public class WebhookEndpoint
+    {
+        [JsonProperty("id")] public int Id { get; set; }
+        [JsonProperty("url")] public string Url { get; set; } = "";
+        [JsonProperty("events")] public List<string> Events { get; set; } = new();
+        [JsonProperty("status")] public string Status { get; set; } = "";
+        [JsonProperty("failure_count")] public int FailureCount { get; set; }
+        [JsonProperty("secret")] public string? Secret { get; set; }
+        [JsonProperty("created_at")] public string? CreatedAt { get; set; }
+        [JsonProperty("updated_at")] public string? UpdatedAt { get; set; }
+    }
+
+    public class WebhookTestResult
+    {
+        [JsonProperty("delivery_id")] public int DeliveryId { get; set; }
+        [JsonProperty("endpoint_id")] public int EndpointId { get; set; }
+        [JsonProperty("event")] public string Event { get; set; } = "";
+        [JsonProperty("http_status")] public int? HttpStatus { get; set; }
+        [JsonProperty("success")] public bool Success { get; set; }
+        [JsonProperty("error")] public string? Error { get; set; }
+        [JsonProperty("created_at")] public string? CreatedAt { get; set; }
+    }
 }

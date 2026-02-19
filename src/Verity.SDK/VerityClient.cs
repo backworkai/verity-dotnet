@@ -92,6 +92,8 @@ namespace Verity.SDK
             string? cursor = null,
             int limit = 50,
             string[]? include = null,
+            string? icd10 = null,
+            string? format = null,
             CancellationToken cancellationToken = default)
         {
             var queryParams = new Dictionary<string, string>
@@ -103,21 +105,27 @@ namespace Verity.SDK
 
             if (!string.IsNullOrWhiteSpace(query))
                 queryParams["q"] = query;
-            
+
             if (!string.IsNullOrWhiteSpace(policyType))
                 queryParams["policy_type"] = policyType;
-            
+
             if (!string.IsNullOrWhiteSpace(jurisdiction))
                 queryParams["jurisdiction"] = jurisdiction;
-            
+
             if (!string.IsNullOrWhiteSpace(payer))
                 queryParams["payer"] = payer;
-            
+
             if (!string.IsNullOrWhiteSpace(cursor))
                 queryParams["cursor"] = cursor;
-            
+
             if (include != null && include.Length > 0)
                 queryParams["include"] = string.Join(",", include);
+
+            if (!string.IsNullOrWhiteSpace(icd10))
+                queryParams["icd10"] = icd10;
+
+            if (!string.IsNullOrWhiteSpace(format))
+                queryParams["format"] = format;
 
             var path = BuildPath("/policies", queryParams);
             return await GetAsync<List<PolicyListItem>>(path, cancellationToken);
@@ -343,6 +351,116 @@ namespace Verity.SDK
             return await GetAsync<Dictionary<string, CodeSpendingData>>(path, cancellationToken);
         }
 
+        /// <summary>
+        /// Batch look up multiple medical codes in a single request
+        /// </summary>
+        public async Task<ApiResponse<BatchCodeLookupData>> BatchLookupCodesAsync(
+            string[] codes,
+            string? codeSystem = null,
+            string[]? include = null,
+            CancellationToken cancellationToken = default)
+        {
+            var body = new Dictionary<string, object>
+            {
+                ["codes"] = codes
+            };
+
+            if (!string.IsNullOrWhiteSpace(codeSystem))
+                body["code_system"] = codeSystem;
+
+            if (include != null && include.Length > 0)
+                body["include"] = include;
+
+            return await PostAsync<BatchCodeLookupData>("/codes/batch", body, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Evaluate coverage for a policy against a set of parameters
+        /// </summary>
+        public async Task<ApiResponse<CoverageEvaluationData>> EvaluateCoverageAsync(
+            string policyId,
+            Dictionary<string, object> parameters,
+            CancellationToken cancellationToken = default)
+        {
+            var body = new Dictionary<string, object>
+            {
+                ["policy_id"] = policyId,
+                ["parameters"] = parameters
+            };
+
+            return await PostAsync<CoverageEvaluationData>("/coverage/evaluate", body, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// List all webhook endpoints
+        /// </summary>
+        public async Task<ApiResponse<List<WebhookEndpoint>>> ListWebhooksAsync(
+            CancellationToken cancellationToken = default)
+        {
+            return await GetAsync<List<WebhookEndpoint>>("/webhooks", cancellationToken);
+        }
+
+        /// <summary>
+        /// Create a new webhook endpoint
+        /// </summary>
+        public async Task<ApiResponse<WebhookEndpoint>> CreateWebhookAsync(
+            string url,
+            string[] events,
+            CancellationToken cancellationToken = default)
+        {
+            var body = new Dictionary<string, object>
+            {
+                ["url"] = url,
+                ["events"] = events
+            };
+
+            return await PostAsync<WebhookEndpoint>("/webhooks", body, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Update an existing webhook endpoint
+        /// </summary>
+        public async Task<ApiResponse<WebhookEndpoint>> UpdateWebhookAsync(
+            int webhookId,
+            string? url = null,
+            string[]? events = null,
+            string? status = null,
+            CancellationToken cancellationToken = default)
+        {
+            var body = new Dictionary<string, object>();
+
+            if (!string.IsNullOrWhiteSpace(url))
+                body["url"] = url;
+
+            if (events != null && events.Length > 0)
+                body["events"] = events;
+
+            if (!string.IsNullOrWhiteSpace(status))
+                body["status"] = status;
+
+            return await PatchAsync<WebhookEndpoint>($"/webhooks/{webhookId}", body, cancellationToken);
+        }
+
+        /// <summary>
+        /// Delete a webhook endpoint
+        /// </summary>
+        public async Task<ApiResponse<object>> DeleteWebhookAsync(
+            int webhookId,
+            CancellationToken cancellationToken = default)
+        {
+            return await DeleteAsync<object>($"/webhooks/{webhookId}", cancellationToken);
+        }
+
+        /// <summary>
+        /// Send a test event to a webhook endpoint
+        /// </summary>
+        public async Task<ApiResponse<WebhookTestResult>> TestWebhookAsync(
+            int webhookId,
+            CancellationToken cancellationToken = default)
+        {
+            return await PostAsync<WebhookTestResult>($"/webhooks/{webhookId}/test", new { }, null, cancellationToken);
+        }
+
         private async Task<ApiResponse<T>> GetAsync<T>(string path, CancellationToken cancellationToken)
         {
             var response = await _httpClient.GetAsync($"{_baseUrl}{path}", cancellationToken);
@@ -372,6 +490,31 @@ namespace Verity.SDK
             }
 
             var response = await _httpClient.SendAsync(request, cancellationToken);
+            return await ProcessResponseAsync<T>(response);
+        }
+
+        private async Task<ApiResponse<T>> PatchAsync<T>(
+            string path,
+            object body,
+            CancellationToken cancellationToken = default)
+        {
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), $"{_baseUrl}{path}")
+            {
+                Content = new StringContent(
+                    JsonConvert.SerializeObject(body),
+                    Encoding.UTF8,
+                    "application/json")
+            };
+
+            var response = await _httpClient.SendAsync(request, cancellationToken);
+            return await ProcessResponseAsync<T>(response);
+        }
+
+        private async Task<ApiResponse<T>> DeleteAsync<T>(
+            string path,
+            CancellationToken cancellationToken = default)
+        {
+            var response = await _httpClient.DeleteAsync($"{_baseUrl}{path}", cancellationToken);
             return await ProcessResponseAsync<T>(response);
         }
 
