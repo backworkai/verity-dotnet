@@ -1,6 +1,8 @@
 # Verity .NET SDK
 
-.NET client library for the [Verity API](https://verity.backworkai.com) - Medicare coverage policies, prior authorization requirements, and medical code lookups.
+Official .NET client for the [Verity API](https://verity.backworkai.com): Medicare coverage policies, medical code intelligence, prior authorization checks, claim validation, compliance review, and drug formulary evidence.
+
+The SDK targets .NET Standard 2.0 and is compatible with .NET Framework 4.6.1+, .NET Core 2.0+, and modern .NET releases.
 
 ## Installation
 
@@ -8,8 +10,9 @@
 dotnet add package Verity.SDK
 ```
 
-Or via NuGet Package Manager:
-```
+NuGet Package Manager:
+
+```powershell
 Install-Package Verity.SDK
 ```
 
@@ -17,149 +20,69 @@ Install-Package Verity.SDK
 
 ```csharp
 using Verity.SDK;
-using Verity.SDK.Models;
 
-// Initialize the client
-var client = new VerityClient("vrt_live_YOUR_API_KEY");
+using var client = new VerityClient("vrt_live_YOUR_API_KEY");
 
-// Look up a medical code
-var result = await client.LookupCodeAsync(
-    "76942",
+var code = await client.LookupCodeAsync(
+    code: "76942",
     include: new[] { "rvu", "policies" }
 );
-Console.WriteLine(result.Data?.Description);
-// Output: "Ultrasonic guidance for needle placement"
 
-// Check prior authorization requirements
-var paCheck = await client.CheckPriorAuthAsync(
+Console.WriteLine(code.Data?.Description);
+
+var priorAuth = await client.CheckPriorAuthAsync(
     procedureCodes: new[] { "76942" },
     diagnosisCodes: new[] { "M54.5" },
-    state: "TX"
+    state: "TX",
+    payer: "medicare"
 );
-Console.WriteLine($"PA Required: {paCheck.Data?.PaRequired}");
 
-// Search policies
+Console.WriteLine(priorAuth.Data?.PaRequired);
+```
+
+Get an API key from the [Verity dashboard](https://verity.backworkai.com/dashboard).
+
+## Core Workflows
+
+### Code Lookup
+
+```csharp
+var result = await client.LookupCodeAsync(
+    code: "76942",
+    codeSystem: "CPT",
+    jurisdiction: "JM",
+    include: new[] { "rvu", "policies", "rates" },
+    fuzzy: true
+);
+```
+
+### Policy Search and Retrieval
+
+```csharp
 var policies = await client.ListPoliciesAsync(
     query: "ultrasound guidance",
+    mode: "keyword",
     policyType: "LCD",
-    limit: 10
+    status: "active",
+    limit: 25
 );
 
-// Get specific policy details
 var policy = await client.GetPolicyAsync(
     "L33831",
     include: new[] { "criteria", "codes" }
 );
 ```
 
-## Features
-
-- **.NET Standard 2.0+** - Compatible with .NET Framework 4.6.1+, .NET Core 2.0+, and .NET 5+
-- **Async/await patterns** - Modern asynchronous API
-- **Full IntelliSense support** - Complete XML documentation
-- **Type-safe** - Strongly-typed models
-- **NuGet package** - Easy installation and updates
-
-## Authentication
-
-Get your API key from the [Verity Dashboard](https://verity.backworkai.com/dashboard).
+### Prior Authorization and Claim Validation
 
 ```csharp
-var client = new VerityClient("vrt_live_YOUR_API_KEY");
-
-// Or with custom base URL
-var client = new VerityClient(
-    "vrt_live_YOUR_API_KEY",
-    "https://verity.backworkai.com/api/v1"
-);
-```
-
-## Usage Examples
-
-### Code Lookup
-
-```csharp
-// Basic lookup
-var result = await client.LookupCodeAsync("76942");
-
-// With additional data
-var result = await client.LookupCodeAsync(
-    code: "76942",
-    codeSystem: "HCPCS",
-    jurisdiction: "JM",
-    include: new[] { "rvu", "policies" },
-    fuzzy: true
-);
-
-if (result.Data?.Found == true)
-{
-    Console.WriteLine($"Code: {result.Data.Code}");
-    Console.WriteLine($"Description: {result.Data.Description}");
-    
-    if (result.Data.Rvu != null)
-    {
-        Console.WriteLine($"Price: ${result.Data.Rvu.NonFacilityPrice}");
-    }
-}
-```
-
-### Policy Search
-
-```csharp
-// Keyword search
-var policies = await client.ListPoliciesAsync(
-    query: "ultrasound guidance",
-    mode: "keyword",
-    policyType: "LCD",
-    status: "active",
-    limit: 50
-);
-
-if (policies.Data != null)
-{
-    foreach (var policy in policies.Data)
-    {
-        Console.WriteLine($"{policy.PolicyId}: {policy.Title}");
-    }
-}
-
-// Semantic search
-var policies = await client.ListPoliciesAsync(
-    query: "imaging guidance for procedures",
-    mode: "semantic"
-);
-```
-
-### Prior Authorization
-
-```csharp
-var result = await client.CheckPriorAuthAsync(
-    procedureCodes: new[] { "76942", "76937" },
-    diagnosisCodes: new[] { "M54.5", "G89.29" },
+var priorAuth = await client.CheckPriorAuthAsync(
+    procedureCodes: new[] { "76942" },
+    diagnosisCodes: new[] { "M54.5" },
     state: "TX",
     payer: "medicare"
 );
 
-if (result.Data != null)
-{
-    Console.WriteLine($"PA Required: {result.Data.PaRequired}");
-    Console.WriteLine($"Confidence: {result.Data.Confidence}");
-    Console.WriteLine($"Reason: {result.Data.Reason}");
-    
-    if (result.Data.DocumentationChecklist != null)
-    {
-        Console.WriteLine("\nDocumentation Checklist:");
-        foreach (var item in result.Data.DocumentationChecklist)
-        {
-            Console.WriteLine($"  - {item}");
-        }
-    }
-}
-```
-
-### Claim Validation
-
-```csharp
 var claim = await client.ValidateClaimAsync(
     procedureCodes: new[] { "99213" },
     diagnosisCodes: new[] { "E11.9" },
@@ -167,41 +90,35 @@ var claim = await client.ValidateClaimAsync(
     state: "TX"
 );
 
-Console.WriteLine($"Coverage: {claim.Data?.CoverageStatus}");
-Console.WriteLine($"Denial risk: {claim.Data?.DenialRisk}");
+Console.WriteLine($"{claim.Data?.CoverageStatus} {claim.Data?.DenialRisk}");
 ```
 
-### Get Policy Details
+### Coverage, Spending, and Compliance
 
 ```csharp
-var policy = await client.GetPolicyAsync(
-    "L33831",
-    include: new[] { "criteria", "codes", "attachments" }
+var criteria = await client.SearchCriteriaAsync(
+    query: "diabetes",
+    section: "indications",
+    limit: 10
 );
 
-if (policy.Data != null)
-{
-    Console.WriteLine($"Policy: {policy.Data.Title}");
-    Console.WriteLine($"Type: {policy.Data.PolicyType}");
-    Console.WriteLine($"Status: {policy.Data.Status}");
-    Console.WriteLine($"\n{policy.Data.Summary}");
-}
-```
+var spending = await client.GetSpendingByCodeAsync(
+    codes: new[] { "T1019", "T1020" },
+    year: 2023
+);
 
-### Compliance and Drug Formulary
-
-```csharp
 var changes = await client.ListUnreviewedChangesAsync(limit: 10);
 var stats = await client.GetComplianceStatsAsync();
+```
 
+### Drug Formulary Evidence
+
+```csharp
 var formulary = await client.SearchDrugFormularyEvidenceAsync(
     query: "ozempic",
     payer: "all",
     limit: 5
 );
-
-Console.WriteLine($"Unreviewed changes: {stats.Data?.UnreviewedCount}");
-Console.WriteLine($"Formulary matches: {formulary.Data?.Count}");
 ```
 
 ## Error Handling
@@ -227,65 +144,41 @@ catch (RateLimitException ex)
 }
 catch (VerityException ex)
 {
-    Console.WriteLine($"API error ({ex.Code}): {ex.Message}");
+    Console.WriteLine($"Verity API error ({ex.Code}): {ex.Message}");
 }
 ```
 
-## Using with Dependency Injection
+## Dependency Injection
 
 ```csharp
-// Startup.cs or Program.cs
-services.AddSingleton<VerityClient>(sp => 
+services.AddSingleton<VerityClient>(_ =>
     new VerityClient(configuration["Verity:ApiKey"]));
-
-// In your service/controller
-public class MyService
-{
-    private readonly VerityClient _verity;
-    
-    public MyService(VerityClient verity)
-    {
-        _verity = verity;
-    }
-    
-    public async Task<bool> CheckPriorAuth(string procedureCode)
-    {
-        var result = await _verity.CheckPriorAuthAsync(
-            new[] { procedureCode },
-            state: "TX"
-        );
-        return result.Data?.PaRequired ?? false;
-    }
-}
 ```
 
-## Disposal
-
-The client implements `IDisposable` and should be properly disposed:
+## Configuration and Disposal
 
 ```csharp
-using (var client = new VerityClient("vrt_live_YOUR_API_KEY"))
-{
-    var result = await client.LookupCodeAsync("76942");
-    // Client automatically disposed here
-}
-
-// Or with using declaration (C# 8+)
-using var client = new VerityClient("vrt_live_YOUR_API_KEY");
-var result = await client.LookupCodeAsync("76942");
+using var client = new VerityClient(
+    "vrt_live_YOUR_API_KEY",
+    "https://verity.backworkai.com/api/v1"
+);
 ```
 
-## Requirements
+`VerityClient` implements `IDisposable`. Use a `using` statement or register it with your dependency injection container.
 
-- .NET Standard 2.0+ (.NET Framework 4.6.1+, .NET Core 2.0+, .NET 5+)
-- Newtonsoft.Json 13.0.3+
+## Development
 
-## License
-
-MIT License - see LICENSE file for details.
+```bash
+dotnet restore
+dotnet build src/Verity.SDK/Verity.SDK.csproj
+```
 
 ## Support
 
 - Documentation: https://verity.backworkai.com/docs
 - Issues: https://github.com/backworkai/verity-dotnet/issues
 - Email: support@verity.backworkai.com
+
+## License
+
+MIT
