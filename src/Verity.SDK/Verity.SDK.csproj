@@ -12,7 +12,7 @@
     <Description>.NET SDK for Verity API - Medicare coverage policies and prior authorization</Description>
     <PackageTags>verity;medicare;healthcare;prior-authorization;medical-codes</PackageTags>
     <PackageProjectUrl>https://verity.backworkai.com</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/tylerbryy/verity-dotnet</RepositoryUrl>
+    <RepositoryUrl>https://github.com/backworkai/verity-dotnet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>

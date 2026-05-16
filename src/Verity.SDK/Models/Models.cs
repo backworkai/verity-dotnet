@@ -38,6 +38,17 @@ namespace Verity.SDK.Models
 
         [JsonProperty("policies")]
         public List<PolicyMatch>? Policies { get; set; }
+
+        [JsonProperty("negotiated_rates")]
+        public NegotiatedRateSummary? NegotiatedRates { get; set; }
+    }
+
+    public class NegotiatedRateSummary
+    {
+        [JsonProperty("min_rate")] public string? MinRate { get; set; }
+        [JsonProperty("max_rate")] public string? MaxRate { get; set; }
+        [JsonProperty("avg_rate")] public string? AvgRate { get; set; }
+        [JsonProperty("num_rates")] public int? NumRates { get; set; }
     }
 
     public class RvuData
@@ -333,5 +344,84 @@ namespace Verity.SDK.Models
         [JsonProperty("success")] public bool Success { get; set; }
         [JsonProperty("error")] public string? Error { get; set; }
         [JsonProperty("created_at")] public string? CreatedAt { get; set; }
+    }
+
+    public class ClaimValidationData
+    {
+        [JsonProperty("payer")] public string? Payer { get; set; }
+        [JsonProperty("plan_type")] public string? PlanType { get; set; }
+        [JsonProperty("line_of_business")] public string? LineOfBusiness { get; set; }
+        [JsonProperty("state")] public string? State { get; set; }
+        [JsonProperty("site_of_service")] public string? SiteOfService { get; set; }
+        [JsonProperty("provider_specialty")] public string? ProviderSpecialty { get; set; }
+        [JsonProperty("modifiers")] public List<string> Modifiers { get; set; } = new();
+        [JsonProperty("overall_risk")] public string OverallRisk { get; set; } = "";
+        [JsonProperty("coverage_status")] public string CoverageStatus { get; set; } = "";
+        [JsonProperty("prior_auth_required")] public bool PriorAuthRequired { get; set; }
+        [JsonProperty("denial_risk")] public string DenialRisk { get; set; } = "";
+        [JsonProperty("confidence")] public string Confidence { get; set; } = "";
+        [JsonProperty("documentation_requirements")] public List<string> DocumentationRequirements { get; set; } = new();
+        [JsonProperty("policy_sources")] public List<Dictionary<string, object>> PolicySources { get; set; } = new();
+        [JsonProperty("requires_manual_review")] public bool RequiresManualReview { get; set; }
+        [JsonProperty("known_gaps")] public List<string> KnownGaps { get; set; } = new();
+        [JsonProperty("codes")] public List<Dictionary<string, object>> Codes { get; set; } = new();
+        [JsonProperty("mac")] public Dictionary<string, object>? Mac { get; set; }
+    }
+
+    public class UnreviewedChange
+    {
+        [JsonProperty("diff_id")] public int DiffId { get; set; }
+        [JsonProperty("policy_id")] public string PolicyId { get; set; } = "";
+        [JsonProperty("policy_title")] public string PolicyTitle { get; set; } = "";
+        [JsonProperty("policy_type")] public string PolicyType { get; set; } = "";
+        [JsonProperty("payer_name")] public string? PayerName { get; set; }
+        [JsonProperty("change_type")] public string ChangeType { get; set; } = "";
+        [JsonProperty("change_summary")] public string ChangeSummary { get; set; } = "";
+        [JsonProperty("changed_at")] public string ChangedAt { get; set; } = "";
+    }
+
+    public class AcknowledgeChangeData
+    {
+        [JsonProperty("id")] public int? Id { get; set; }
+        [JsonProperty("acknowledged")] public bool Acknowledged { get; set; }
+        [JsonProperty("already_acked")] public bool AlreadyAcked { get; set; }
+    }
+
+    public class BulkAcknowledgeChangesData
+    {
+        [JsonProperty("acknowledged")] public int Acknowledged { get; set; }
+        [JsonProperty("already_acked")] public int AlreadyAcked { get; set; }
+        [JsonProperty("invalid_ids")] public List<int> InvalidIds { get; set; } = new();
+        [JsonProperty("total")] public int Total { get; set; }
+    }
+
+    public class ComplianceStats
+    {
+        [JsonProperty("total_changes_30d")] public int TotalChanges30d { get; set; }
+        [JsonProperty("acknowledged_count")] public int AcknowledgedCount { get; set; }
+        [JsonProperty("unreviewed_count")] public int UnreviewedCount { get; set; }
+        [JsonProperty("acknowledgment_rate")] public int AcknowledgmentRate { get; set; }
+        [JsonProperty("critical_unreviewed")] public int CriticalUnreviewed { get; set; }
+    }
+
+    public class DrugFormularyEvidence
+    {
+        [JsonProperty("source")] public string Source { get; set; } = "";
+        [JsonProperty("payer_name")] public string PayerName { get; set; } = "";
+        [JsonProperty("pbm_name")] public string? PbmName { get; set; }
+        [JsonProperty("formulary_name")] public string? FormularyName { get; set; }
+        [JsonProperty("plan_year")] public int? PlanYear { get; set; }
+        [JsonProperty("effective_date")] public string? EffectiveDate { get; set; }
+        [JsonProperty("drug_name")] public string DrugName { get; set; } = "";
+        [JsonProperty("matched_text")] public string? MatchedText { get; set; }
+        [JsonProperty("therapeutic_category")] public string? TherapeuticCategory { get; set; }
+        [JsonProperty("drug_class")] public string? DrugClass { get; set; }
+        [JsonProperty("tier")] public string? Tier { get; set; }
+        [JsonProperty("coverage_status")] public string? CoverageStatus { get; set; }
+        [JsonProperty("requirements")] public Dictionary<string, object>? Requirements { get; set; }
+        [JsonProperty("alternatives")] public string? Alternatives { get; set; }
+        [JsonProperty("preferred_alternatives")] public string? PreferredAlternatives { get; set; }
+        [JsonProperty("source_url")] public string? SourceUrl { get; set; }
+        [JsonProperty("source_page")] public int? SourcePage { get; set; }
     }
 }
