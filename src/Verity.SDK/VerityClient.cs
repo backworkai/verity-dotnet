@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -180,6 +181,125 @@ namespace Verity.SDK
                 headers["X-Idempotency-Key"] = idempotencyKey;
 
             return await PostAsync<PriorAuthResult>("/prior-auth/check", body, headers, cancellationToken);
+        }
+
+        /// <summary>
+        /// Validate coverage and denial risk for a claim
+        /// </summary>
+        public async Task<ApiResponse<ClaimValidationData>> ValidateClaimAsync(
+            string[] procedureCodes,
+            string? payer = null,
+            string? planType = null,
+            string? lineOfBusiness = null,
+            string[]? diagnosisCodes = null,
+            string[]? modifiers = null,
+            string? state = null,
+            string? siteOfService = null,
+            string? providerSpecialty = null,
+            string? ageCategory = null,
+            string? sexWhenPolicyRelevant = null,
+            string? idempotencyKey = null,
+            CancellationToken cancellationToken = default)
+        {
+            return await ValidateClaimAtPathAsync(
+                "/claims/validate",
+                procedureCodes,
+                payer,
+                planType,
+                lineOfBusiness,
+                diagnosisCodes,
+                modifiers,
+                state,
+                siteOfService,
+                providerSpecialty,
+                ageCategory,
+                sexWhenPolicyRelevant,
+                idempotencyKey,
+                cancellationToken);
+        }
+
+        /// <summary>
+        /// Validate a claim through the deprecated compatibility endpoint
+        /// </summary>
+        public async Task<ApiResponse<ClaimValidationData>> ValidateClaimLegacyAsync(
+            string[] procedureCodes,
+            string? payer = null,
+            string? planType = null,
+            string? lineOfBusiness = null,
+            string[]? diagnosisCodes = null,
+            string[]? modifiers = null,
+            string? state = null,
+            string? siteOfService = null,
+            string? providerSpecialty = null,
+            string? ageCategory = null,
+            string? sexWhenPolicyRelevant = null,
+            string? idempotencyKey = null,
+            CancellationToken cancellationToken = default)
+        {
+            return await ValidateClaimAtPathAsync(
+                "/claim-validation",
+                procedureCodes,
+                payer,
+                planType,
+                lineOfBusiness,
+                diagnosisCodes,
+                modifiers,
+                state,
+                siteOfService,
+                providerSpecialty,
+                ageCategory,
+                sexWhenPolicyRelevant,
+                idempotencyKey,
+                cancellationToken);
+        }
+
+        private async Task<ApiResponse<ClaimValidationData>> ValidateClaimAtPathAsync(
+            string path,
+            string[] procedureCodes,
+            string? payer,
+            string? planType,
+            string? lineOfBusiness,
+            string[]? diagnosisCodes,
+            string[]? modifiers,
+            string? state,
+            string? siteOfService,
+            string? providerSpecialty,
+            string? ageCategory,
+            string? sexWhenPolicyRelevant,
+            string? idempotencyKey,
+            CancellationToken cancellationToken)
+        {
+            var body = new Dictionary<string, object>
+            {
+                ["procedure_codes"] = procedureCodes
+            };
+
+            if (!string.IsNullOrWhiteSpace(payer))
+                body["payer"] = payer;
+            if (!string.IsNullOrWhiteSpace(planType))
+                body["plan_type"] = planType;
+            if (!string.IsNullOrWhiteSpace(lineOfBusiness))
+                body["line_of_business"] = lineOfBusiness;
+            if (diagnosisCodes != null && diagnosisCodes.Length > 0)
+                body["diagnosis_codes"] = diagnosisCodes;
+            if (modifiers != null && modifiers.Length > 0)
+                body["modifiers"] = modifiers;
+            if (!string.IsNullOrWhiteSpace(state))
+                body["state"] = state;
+            if (!string.IsNullOrWhiteSpace(siteOfService))
+                body["site_of_service"] = siteOfService;
+            if (!string.IsNullOrWhiteSpace(providerSpecialty))
+                body["provider_specialty"] = providerSpecialty;
+            if (!string.IsNullOrWhiteSpace(ageCategory))
+                body["age_category"] = ageCategory;
+            if (!string.IsNullOrWhiteSpace(sexWhenPolicyRelevant))
+                body["sex_when_policy_relevant"] = sexWhenPolicyRelevant;
+
+            var headers = new Dictionary<string, string>();
+            if (!string.IsNullOrWhiteSpace(idempotencyKey))
+                headers["X-Idempotency-Key"] = idempotencyKey;
+
+            return await PostAsync<ClaimValidationData>(path, body, headers, cancellationToken);
         }
 
         /// <summary>
@@ -459,6 +579,97 @@ namespace Verity.SDK
             CancellationToken cancellationToken = default)
         {
             return await PostAsync<WebhookTestResult>($"/webhooks/{webhookId}/test", new { }, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// List policy changes that have not been acknowledged
+        /// </summary>
+        public async Task<ApiResponse<List<UnreviewedChange>>> ListUnreviewedChangesAsync(
+            string? changeType = null,
+            string? cursor = null,
+            int limit = 50,
+            CancellationToken cancellationToken = default)
+        {
+            var queryParams = new Dictionary<string, string>
+            {
+                ["limit"] = limit.ToString()
+            };
+
+            if (!string.IsNullOrWhiteSpace(changeType))
+                queryParams["change_type"] = changeType;
+
+            if (!string.IsNullOrWhiteSpace(cursor))
+                queryParams["cursor"] = cursor;
+
+            var path = BuildPath("/compliance/unreviewed", queryParams);
+            return await GetAsync<List<UnreviewedChange>>(path, cancellationToken);
+        }
+
+        /// <summary>
+        /// Acknowledge a single policy change
+        /// </summary>
+        public async Task<ApiResponse<AcknowledgeChangeData>> AcknowledgeChangeAsync(
+            int diffId,
+            string? notes = null,
+            CancellationToken cancellationToken = default)
+        {
+            var body = new Dictionary<string, object>
+            {
+                ["diff_id"] = diffId
+            };
+
+            if (!string.IsNullOrWhiteSpace(notes))
+                body["notes"] = notes;
+
+            return await PostAsync<AcknowledgeChangeData>("/compliance/ack", body, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Acknowledge multiple policy changes
+        /// </summary>
+        public async Task<ApiResponse<BulkAcknowledgeChangesData>> BulkAcknowledgeChangesAsync(
+            int[] diffIds,
+            string? notes = null,
+            CancellationToken cancellationToken = default)
+        {
+            var body = new Dictionary<string, object>
+            {
+                ["diff_ids"] = diffIds
+            };
+
+            if (!string.IsNullOrWhiteSpace(notes))
+                body["notes"] = notes;
+
+            return await PostAsync<BulkAcknowledgeChangesData>("/compliance/ack/bulk", body, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Get compliance dashboard statistics
+        /// </summary>
+        public async Task<ApiResponse<ComplianceStats>> GetComplianceStatsAsync(
+            CancellationToken cancellationToken = default)
+        {
+            return await GetAsync<ComplianceStats>("/compliance/stats", cancellationToken);
+        }
+
+        /// <summary>
+        /// Search commercial pharmacy-benefit formulary evidence
+        /// </summary>
+        public async Task<ApiResponse<List<DrugFormularyEvidence>>> SearchDrugFormularyEvidenceAsync(
+            string query,
+            string payer = "all",
+            int limit = 25,
+            CancellationToken cancellationToken = default)
+        {
+            var queryParams = new Dictionary<string, string>
+            {
+                ["q"] = query,
+                ["payer"] = payer,
+                ["limit"] = limit.ToString()
+            };
+
+            var path = BuildPath("/drugs/formulary", queryParams);
+            return await GetAsync<List<DrugFormularyEvidence>>(path, cancellationToken);
         }
 
         private async Task<ApiResponse<T>> GetAsync<T>(string path, CancellationToken cancellationToken)

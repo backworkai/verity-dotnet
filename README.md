@@ -157,6 +157,20 @@ if (result.Data != null)
 }
 ```
 
+### Claim Validation
+
+```csharp
+var claim = await client.ValidateClaimAsync(
+    procedureCodes: new[] { "99213" },
+    diagnosisCodes: new[] { "E11.9" },
+    payer: "Medicare",
+    state: "TX"
+);
+
+Console.WriteLine($"Coverage: {claim.Data?.CoverageStatus}");
+Console.WriteLine($"Denial risk: {claim.Data?.DenialRisk}");
+```
+
 ### Get Policy Details
 
 ```csharp
@@ -172,6 +186,22 @@ if (policy.Data != null)
     Console.WriteLine($"Status: {policy.Data.Status}");
     Console.WriteLine($"\n{policy.Data.Summary}");
 }
+```
+
+### Compliance and Drug Formulary
+
+```csharp
+var changes = await client.ListUnreviewedChangesAsync(limit: 10);
+var stats = await client.GetComplianceStatsAsync();
+
+var formulary = await client.SearchDrugFormularyEvidenceAsync(
+    query: "ozempic",
+    payer: "all",
+    limit: 5
+);
+
+Console.WriteLine($"Unreviewed changes: {stats.Data?.UnreviewedCount}");
+Console.WriteLine($"Formulary matches: {formulary.Data?.Count}");
 ```
 
 ## Error Handling
@@ -257,5 +287,5 @@ MIT License - see LICENSE file for details.
 ## Support
 
 - Documentation: https://verity.backworkai.com/docs
-- Issues: https://github.com/tylerbryy/verity-dotnet/issues
+- Issues: https://github.com/backworkai/verity-dotnet/issues
 - Email: support@verity.backworkai.com
