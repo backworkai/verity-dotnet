@@ -382,7 +382,7 @@ namespace Verity.SDK.Models
 
     public class AcknowledgeChangeData
     {
-        [JsonProperty("id")] public int Id { get; set; }
+        [JsonProperty("id")] public int? Id { get; set; }
         [JsonProperty("acknowledged")] public bool Acknowledged { get; set; }
         [JsonProperty("already_acked")] public bool AlreadyAcked { get; set; }
     }
@@ -391,6 +391,7 @@ namespace Verity.SDK.Models
     {
         [JsonProperty("acknowledged")] public int Acknowledged { get; set; }
         [JsonProperty("already_acked")] public int AlreadyAcked { get; set; }
+        [JsonProperty("invalid_ids")] public List<int> InvalidIds { get; set; } = new();
         [JsonProperty("total")] public int Total { get; set; }
     }
 
