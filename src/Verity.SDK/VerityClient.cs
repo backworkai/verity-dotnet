@@ -39,7 +39,7 @@ namespace Verity.SDK
             };
             _httpClient.DefaultRequestHeaders.Authorization = 
                 new AuthenticationHeaderValue("Bearer", apiKey);
-            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("verity-dotnet/1.0.0");
+            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("verity-dotnet/1.0.1");
         }
 
         /// <summary>
@@ -568,7 +568,7 @@ namespace Verity.SDK
                 body["code_system"] = codeSystem;
 
             if (include != null && include.Length > 0)
-                body["include"] = include;
+                body["include"] = string.Join(",", include);
 
             return await PostAsync<BatchCodeLookupData>("/codes/batch", body, null, cancellationToken);
         }
