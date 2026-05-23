@@ -194,11 +194,20 @@ namespace Verity.SDK.Models
         [JsonProperty("block_id")]
         public string? BlockId { get; set; }
 
+        [JsonProperty("criteria_id")]
+        public string? CriteriaId { get; set; }
+
         [JsonProperty("text")]
         public string? Text { get; set; }
 
         [JsonProperty("tags")]
         public List<string>? Tags { get; set; }
+
+        [JsonProperty("requires_manual_review")]
+        public bool? RequiresManualReview { get; set; }
+
+        [JsonProperty("confidence_score")]
+        public double? ConfidenceScore { get; set; }
 
         [JsonProperty("policy_id")]
         public string? PolicyId { get; set; }
@@ -206,8 +215,29 @@ namespace Verity.SDK.Models
         [JsonProperty("policy_title")]
         public string? PolicyTitle { get; set; }
 
+        [JsonProperty("policy_type")]
+        public string? PolicyType { get; set; }
+
+        [JsonProperty("jurisdiction")]
+        public string? Jurisdiction { get; set; }
+
+        [JsonProperty("effective_date")]
+        public string? EffectiveDate { get; set; }
+
         [JsonProperty("section")]
         public string? Section { get; set; }
+
+        [JsonProperty("policy")]
+        public CriteriaPolicyRef? Policy { get; set; }
+    }
+
+    public class CriteriaPolicyRef
+    {
+        [JsonProperty("policy_id")] public string PolicyId { get; set; } = "";
+        [JsonProperty("title")] public string Title { get; set; } = "";
+        [JsonProperty("policy_type")] public string PolicyType { get; set; } = "";
+        [JsonProperty("jurisdiction")] public string? Jurisdiction { get; set; }
+        [JsonProperty("effective_date")] public string? EffectiveDate { get; set; }
     }
 
     public class PriorAuthResearchResult
@@ -346,25 +376,62 @@ namespace Verity.SDK.Models
         [JsonProperty("created_at")] public string? CreatedAt { get; set; }
     }
 
+    public class PolicySource
+    {
+        [JsonProperty("source_id")] public string? SourceId { get; set; }
+        [JsonProperty("policy_id")] public string? PolicyId { get; set; }
+        [JsonProperty("title")] public string? Title { get; set; }
+        [JsonProperty("policy_type")] public string? PolicyType { get; set; }
+        [JsonProperty("jurisdiction")] public string? Jurisdiction { get; set; }
+        [JsonProperty("source_url")] public string? SourceUrl { get; set; }
+        [JsonProperty("effective_date")] public string? EffectiveDate { get; set; }
+        [JsonProperty("last_verified_at")] public string? LastVerifiedAt { get; set; }
+    }
+
+    public class ClaimValidationCodeResult
+    {
+        [JsonProperty("code")] public string Code { get; set; } = "";
+        [JsonProperty("code_type")] public string CodeType { get; set; } = "";
+        [JsonProperty("description")] public string? Description { get; set; }
+        [JsonProperty("coverage_status")] public string CoverageStatus { get; set; } = "";
+        [JsonProperty("prior_auth_required")] public bool? PriorAuthRequired { get; set; }
+        [JsonProperty("pa_required")] public bool? PaRequired { get; set; }
+        [JsonProperty("denial_risk")] public string DenialRisk { get; set; } = "";
+        [JsonProperty("confidence")] public string Confidence { get; set; } = "";
+        [JsonProperty("documentation_requirements")] public List<string> DocumentationRequirements { get; set; } = new();
+        [JsonProperty("policy_sources")] public List<PolicySource> PolicySources { get; set; } = new();
+        [JsonProperty("effective_date")] public string? EffectiveDate { get; set; }
+        [JsonProperty("last_verified_at")] public string? LastVerifiedAt { get; set; }
+        [JsonProperty("requires_manual_review")] public bool RequiresManualReview { get; set; }
+        [JsonProperty("known_gaps")] public List<string> KnownGaps { get; set; } = new();
+        [JsonProperty("issues")] public List<string> Issues { get; set; } = new();
+        [JsonProperty("policy_count")] public int? PolicyCount { get; set; }
+    }
+
     public class ClaimValidationData
     {
         [JsonProperty("payer")] public string? Payer { get; set; }
         [JsonProperty("plan_type")] public string? PlanType { get; set; }
         [JsonProperty("line_of_business")] public string? LineOfBusiness { get; set; }
         [JsonProperty("state")] public string? State { get; set; }
+        [JsonProperty("date_of_service")] public string? DateOfService { get; set; }
         [JsonProperty("site_of_service")] public string? SiteOfService { get; set; }
         [JsonProperty("provider_specialty")] public string? ProviderSpecialty { get; set; }
         [JsonProperty("modifiers")] public List<string> Modifiers { get; set; } = new();
         [JsonProperty("overall_risk")] public string OverallRisk { get; set; } = "";
         [JsonProperty("coverage_status")] public string CoverageStatus { get; set; } = "";
-        [JsonProperty("prior_auth_required")] public bool PriorAuthRequired { get; set; }
+        [JsonProperty("prior_auth_required")] public bool? PriorAuthRequired { get; set; }
         [JsonProperty("denial_risk")] public string DenialRisk { get; set; } = "";
         [JsonProperty("confidence")] public string Confidence { get; set; } = "";
         [JsonProperty("documentation_requirements")] public List<string> DocumentationRequirements { get; set; } = new();
-        [JsonProperty("policy_sources")] public List<Dictionary<string, object>> PolicySources { get; set; } = new();
+        [JsonProperty("policy_sources")] public List<PolicySource> PolicySources { get; set; } = new();
+        [JsonProperty("matched_policies")] public List<PolicySource> MatchedPolicies { get; set; } = new();
+        [JsonProperty("effective_date")] public string? EffectiveDate { get; set; }
+        [JsonProperty("last_verified_at")] public string? LastVerifiedAt { get; set; }
         [JsonProperty("requires_manual_review")] public bool RequiresManualReview { get; set; }
         [JsonProperty("known_gaps")] public List<string> KnownGaps { get; set; } = new();
-        [JsonProperty("codes")] public List<Dictionary<string, object>> Codes { get; set; } = new();
+        [JsonProperty("issues")] public List<string> Issues { get; set; } = new();
+        [JsonProperty("codes")] public List<ClaimValidationCodeResult> Codes { get; set; } = new();
         [JsonProperty("mac")] public Dictionary<string, object>? Mac { get; set; }
     }
 
