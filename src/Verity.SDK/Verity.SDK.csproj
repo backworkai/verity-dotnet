@@ -9,6 +9,7 @@
     <Version>1.0.0</Version>
     <Authors>Verity</Authors>
     <Company>Verity</Company>
+    <Copyright>Copyright (c) Verity 2026</Copyright>
     <Description>.NET SDK for Verity API - Medicare coverage policies and prior authorization</Description>
     <PackageTags>verity;medicare;healthcare;prior-authorization;medical-codes</PackageTags>
     <PackageProjectUrl>https://verity.backworkai.com</PackageProjectUrl>
