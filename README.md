@@ -83,14 +83,16 @@ var priorAuth = await client.CheckPriorAuthAsync(
     payer: "medicare"
 );
 
-var claim = await client.ValidateClaimAsync(
+var claim = await client.ValidateClaimWithDateOfServiceAsync(
     procedureCodes: new[] { "99213" },
     diagnosisCodes: new[] { "E11.9" },
     payer: "Medicare",
-    state: "TX"
+    state: "TX",
+    dateOfService: "2026-05-23"
 );
 
 Console.WriteLine($"{claim.Data?.CoverageStatus} {claim.Data?.DenialRisk}");
+Console.WriteLine(string.Join(", ", claim.Data?.Issues ?? new()));
 ```
 
 ### Coverage, Spending, and Compliance
@@ -101,6 +103,7 @@ var criteria = await client.SearchCriteriaAsync(
     section: "indications",
     limit: 10
 );
+Console.WriteLine($"{criteria.Data?.FirstOrDefault()?.PolicyId}: {criteria.Data?.FirstOrDefault()?.PolicyTitle}");
 
 var spending = await client.GetSpendingByCodeAsync(
     codes: new[] { "T1019", "T1020" },

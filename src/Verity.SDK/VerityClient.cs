@@ -210,6 +210,44 @@ namespace Verity.SDK
                 diagnosisCodes,
                 modifiers,
                 state,
+                null,
+                siteOfService,
+                providerSpecialty,
+                ageCategory,
+                sexWhenPolicyRelevant,
+                idempotencyKey,
+                cancellationToken);
+        }
+
+        /// <summary>
+        /// Validate coverage and denial risk for a claim with a date of service
+        /// </summary>
+        public async Task<ApiResponse<ClaimValidationData>> ValidateClaimWithDateOfServiceAsync(
+            string[] procedureCodes,
+            string? payer = null,
+            string? planType = null,
+            string? lineOfBusiness = null,
+            string[]? diagnosisCodes = null,
+            string[]? modifiers = null,
+            string? state = null,
+            string? siteOfService = null,
+            string? providerSpecialty = null,
+            string? ageCategory = null,
+            string? sexWhenPolicyRelevant = null,
+            string? idempotencyKey = null,
+            string? dateOfService = null,
+            CancellationToken cancellationToken = default)
+        {
+            return await ValidateClaimAtPathAsync(
+                "/claims/validate",
+                procedureCodes,
+                payer,
+                planType,
+                lineOfBusiness,
+                diagnosisCodes,
+                modifiers,
+                state,
+                dateOfService,
                 siteOfService,
                 providerSpecialty,
                 ageCategory,
@@ -245,6 +283,44 @@ namespace Verity.SDK
                 diagnosisCodes,
                 modifiers,
                 state,
+                null,
+                siteOfService,
+                providerSpecialty,
+                ageCategory,
+                sexWhenPolicyRelevant,
+                idempotencyKey,
+                cancellationToken);
+        }
+
+        /// <summary>
+        /// Validate a claim through the deprecated compatibility endpoint with a date of service
+        /// </summary>
+        public async Task<ApiResponse<ClaimValidationData>> ValidateClaimLegacyWithDateOfServiceAsync(
+            string[] procedureCodes,
+            string? payer = null,
+            string? planType = null,
+            string? lineOfBusiness = null,
+            string[]? diagnosisCodes = null,
+            string[]? modifiers = null,
+            string? state = null,
+            string? siteOfService = null,
+            string? providerSpecialty = null,
+            string? ageCategory = null,
+            string? sexWhenPolicyRelevant = null,
+            string? idempotencyKey = null,
+            string? dateOfService = null,
+            CancellationToken cancellationToken = default)
+        {
+            return await ValidateClaimAtPathAsync(
+                "/claim-validation",
+                procedureCodes,
+                payer,
+                planType,
+                lineOfBusiness,
+                diagnosisCodes,
+                modifiers,
+                state,
+                dateOfService,
                 siteOfService,
                 providerSpecialty,
                 ageCategory,
@@ -262,6 +338,7 @@ namespace Verity.SDK
             string[]? diagnosisCodes,
             string[]? modifiers,
             string? state,
+            string? dateOfService,
             string? siteOfService,
             string? providerSpecialty,
             string? ageCategory,
@@ -286,6 +363,8 @@ namespace Verity.SDK
                 body["modifiers"] = modifiers;
             if (!string.IsNullOrWhiteSpace(state))
                 body["state"] = state;
+            if (!string.IsNullOrWhiteSpace(dateOfService))
+                body["date_of_service"] = dateOfService;
             if (!string.IsNullOrWhiteSpace(siteOfService))
                 body["site_of_service"] = siteOfService;
             if (!string.IsNullOrWhiteSpace(providerSpecialty))
