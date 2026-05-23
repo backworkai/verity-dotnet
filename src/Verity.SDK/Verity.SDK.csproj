@@ -16,6 +16,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>Initial public Verity .NET SDK release.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

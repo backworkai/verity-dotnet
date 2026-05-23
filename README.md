@@ -6,6 +6,16 @@ The SDK targets .NET Standard 2.0 and is compatible with .NET Framework 4.6.1+, 
 
 ## Installation
 
+Build from source until the first NuGet release is indexed:
+
+```bash
+git clone https://github.com/backworkai/verity-dotnet.git
+cd verity-dotnet
+dotnet build src/Verity.SDK/Verity.SDK.csproj
+```
+
+After the first NuGet release:
+
 ```bash
 dotnet add package Verity.SDK
 ```
@@ -174,7 +184,18 @@ using var client = new VerityClient(
 ```bash
 dotnet restore
 dotnet build src/Verity.SDK/Verity.SDK.csproj
+dotnet pack src/Verity.SDK/Verity.SDK.csproj --configuration Release --output artifacts
 ```
+
+## Release
+
+The SDK publishes to NuGet.org as `Verity.SDK` using NuGet Trusted Publishing.
+
+1. Configure a NuGet trusted publishing policy for `backworkai/verity-dotnet`, workflow `release.yml`, environment `nuget`.
+2. Save the NuGet profile username as the repository secret `NUGET_USER`.
+3. Update `src/Verity.SDK/Verity.SDK.csproj` to the new package version.
+4. Push a matching tag, for example `v1.0.0`.
+5. The release workflow restores, builds, packs, exchanges GitHub OIDC for a short-lived NuGet API key, and pushes the `.nupkg` to NuGet.
 
 ## Support
 
