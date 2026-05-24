@@ -6,24 +6,18 @@ The SDK targets .NET Standard 2.0 and is compatible with .NET Framework 4.6.1+, 
 
 ## Installation
 
-Build from source until the first NuGet release is indexed:
+NuGet.org is not currently serving the public `Verity.SDK` package. Until NuGet indexing is resolved, install from the GitHub release asset:
 
 ```bash
-git clone https://github.com/backworkai/verity-dotnet.git
-cd verity-dotnet
-dotnet build src/Verity.SDK/Verity.SDK.csproj
-```
+mkdir -p ~/.nuget/verity
+curl -L -o ~/.nuget/verity/Verity.SDK.1.0.2.nupkg \
+  https://github.com/backworkai/verity-dotnet/releases/download/v1.0.2/Verity.SDK.1.0.2.nupkg
+curl -L -o ~/.nuget/verity/Verity.SDK.1.0.2.nupkg.sha256 \
+  https://github.com/backworkai/verity-dotnet/releases/download/v1.0.2/Verity.SDK.1.0.2.nupkg.sha256
 
-After the first NuGet release:
+(cd ~/.nuget/verity && shasum -a 256 -c Verity.SDK.1.0.2.nupkg.sha256)
 
-```bash
-dotnet add package Verity.SDK
-```
-
-NuGet Package Manager:
-
-```powershell
-Install-Package Verity.SDK
+dotnet add package Verity.SDK --version 1.0.2 --source ~/.nuget/verity
 ```
 
 ## Quick Start
@@ -143,15 +137,15 @@ try
 {
     var result = await client.LookupCodeAsync("76942");
 }
-catch (AuthenticationException ex)
+catch (VerityException ex) when (ex.StatusCode == 401)
 {
     Console.WriteLine($"Invalid API key: {ex.Message}");
 }
-catch (NotFoundException ex)
+catch (VerityException ex) when (ex.StatusCode == 404)
 {
     Console.WriteLine($"Resource not found: {ex.Message}");
 }
-catch (RateLimitException ex)
+catch (VerityException ex) when (ex.StatusCode == 429)
 {
     Console.WriteLine($"Rate limit exceeded: {ex.Message}");
 }

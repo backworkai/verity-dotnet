@@ -39,7 +39,7 @@ namespace Verity.SDK
             };
             _httpClient.DefaultRequestHeaders.Authorization = 
                 new AuthenticationHeaderValue("Bearer", apiKey);
-            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("verity-dotnet/1.0.1");
+            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("verity-dotnet/1.0.2");
         }
 
         /// <summary>
