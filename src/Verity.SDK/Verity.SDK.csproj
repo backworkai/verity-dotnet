@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageId>Verity.SDK</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>Verity</Authors>
     <Company>Verity</Company>
     <Copyright>Copyright (c) Verity 2026</Copyright>
@@ -17,7 +17,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Fix batch code lookup include serialization.</PackageReleaseNotes>
+    <PackageReleaseNotes>Correct release asset installation guidance while NuGet.org indexing is unresolved.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
