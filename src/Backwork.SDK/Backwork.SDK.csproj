@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- AssemblyName and RootNamespace are left implicit: SDK-style projects default them to the
+       project file name, so renaming this file to Backwork.SDK.csproj renames the assembly and
+       namespace root with it. PackageId is stated explicitly because dotnet pack otherwise falls
+       back to AssemblyName (NuGet docs, dotnet pack / .NET SDK 8.0.x). -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>Backwork.SDK</PackageId>
+    <Version>1.0.2</Version>
+    <Authors>Backwork</Authors>
+    <Company>Backwork</Company>
+    <Copyright>Copyright (c) Backwork 2026</Copyright>
+    <Description>.NET SDK for Backwork API - Medicare coverage policies and prior authorization</Description>
+    <PackageTags>backwork;medicare;healthcare;prior-authorization;medical-codes</PackageTags>
+    <PackageProjectUrl>https://backworkhealth.com</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/tylergibbs1/backwork-dotnet</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>Correct release asset installation guidance while NuGet.org indexing is unresolved.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
