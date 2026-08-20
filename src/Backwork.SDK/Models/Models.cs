@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Verity.SDK.Models
+namespace Backwork.SDK.Models
 {
     public class HealthStatus
     {

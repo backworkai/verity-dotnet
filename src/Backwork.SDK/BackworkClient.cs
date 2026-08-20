@@ -7,14 +7,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Verity.SDK.Models;
+using Backwork.SDK.Models;
 
-namespace Verity.SDK
+namespace Backwork.SDK
 {
     /// <summary>
-    /// Client for interacting with the Verity API
+    /// Client for interacting with the Backwork API
     /// </summary>
-    public class VerityClient : IDisposable
+    public class BackworkClient : IDisposable
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
@@ -22,11 +22,11 @@ namespace Verity.SDK
         private bool _disposed;
 
         /// <summary>
-        /// Creates a new Verity API client
+        /// Creates a new Backwork API client
         /// </summary>
-        /// <param name="apiKey">Your Verity API key</param>
+        /// <param name="apiKey">Your Backwork API key</param>
         /// <param name="baseUrl">Base URL for the API (optional)</param>
-        public VerityClient(string apiKey, string baseUrl = "https://verity.backworkai.com/api/v1")
+        public BackworkClient(string apiKey, string baseUrl = "https://backworkhealth.com/api/v1")
         {
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentException("API key is required", nameof(apiKey));
@@ -39,7 +39,7 @@ namespace Verity.SDK
             };
             _httpClient.DefaultRequestHeaders.Authorization = 
                 new AuthenticationHeaderValue("Bearer", apiKey);
-            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("verity-dotnet/1.0.2");
+            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("backwork-dotnet/1.0.2");
         }
 
         /// <summary>
@@ -820,13 +820,13 @@ namespace Verity.SDK
             var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(content);
             if (errorResponse?.Error != null)
             {
-                throw new VerityException(
+                throw new BackworkException(
                     errorResponse.Error.Message,
                     errorResponse.Error.Code,
                     (int)response.StatusCode);
             }
 
-            throw new VerityException($"HTTP {(int)response.StatusCode}", null, (int)response.StatusCode);
+            throw new BackworkException($"HTTP {(int)response.StatusCode}", null, (int)response.StatusCode);
         }
 
         private static string BuildPath(string basePath, Dictionary<string, string> queryParams)

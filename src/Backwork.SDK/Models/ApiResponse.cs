@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Verity.SDK.Models
+namespace Backwork.SDK.Models
 {
     public class ApiResponse<T>
     {
