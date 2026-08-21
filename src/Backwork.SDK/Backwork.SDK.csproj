@@ -10,7 +10,7 @@
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageId>Backwork.SDK</PackageId>
-    <Version>1.0.2</Version>
+    <Version>2.0.0</Version>
     <Authors>Backwork</Authors>
     <Company>Backwork</Company>
     <Copyright>Copyright (c) Backwork 2026</Copyright>
@@ -21,7 +21,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Correct release asset installation guidance while NuGet.org indexing is unresolved.</PackageReleaseNotes>
+    <PackageReleaseNotes>Complete the Backwork package and namespace migration.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
